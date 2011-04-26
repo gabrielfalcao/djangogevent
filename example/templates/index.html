@@ -1,0 +1,90 @@
+<!doctype html>
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Simple CI</title>
+    <meta name="description" content="A dead-simple CI server brought to you by Django GEvent">
+    <meta name="author" content="Gabriel Falcão">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css?v=2">
+
+    <script src="{{ STATIC_URL }}js/libs/modernizr-1.7.min.js"></script>
+  </head>
+  <body>
+    <div id="header-container">
+      <header class="wrapper">
+	<h1 id="title">Simple CI</h1>
+	<nav>
+	  <ul>
+	    <li><a href="{{ STATIC_URL }}#">Builds</a></li>
+	    <li><a href="{{ STATIC_URL }}#">Projects</a></li>
+	    <li><a href="{{ STATIC_URL }}#">Configuration</a></li>
+	  </ul>
+	</nav>
+      </header>
+    </div>
+      <aside>
+	<h2>new build</h2>
+	<form>
+	  <p><label for="name" class="">Project Name
+	      <input type="text" name="name" id="name" value="hello world"/>
+	    </label></p>
+	  <p><label for="command" class="">command
+	      <textarea name="command" id="command" class="command">ls -R /</textarea>
+	    </label></p>
+	  <input type="button" name="build" value="build now" id="start-new-build"/>
+	</form>
+      </aside>
+
+    <div id="main" class="wrapper">
+      {% for build in builds %}
+      <article>
+	<header>
+	  <h2>{{ build.project.name }}'s, build #{{ build.id }}</h2>
+	</header>
+	<pre class="build{{ build.id }}">{{ build.log }}</pre>
+	<footer>
+	  <h3 class="build started">started at {{ build.started_at }}</h3>
+	  {% if build.finished_at %}
+	  <h3 class="build finished">finished {{ build.finished_at }}</h3>
+	  {% else %}
+	  <h3 class="build finished">still running...</h3>
+	  {% endif %}
+	</footer>
+      </article>
+      {% endfor %}
+    </div>
+    <div id="footer-container">
+      <footer class="wrapper">
+
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/jquery-1.5.1.min.js"></script>
+    <script src="{{ STATIC_URL }}js/script.js"></script>
+    <script type="text/javascript">
+      {% spaceless%}
+      {% for build in builds %}
+        {% if not build.finished_at %}
+            getBuildLog("{{ build.id }}");
+        {% endif %}
+      {% endfor %}
+      {% endspaceless %}
+    </script>
+    <!--[if lt IE 7 ]>
+	<script src="{{ STATIC_URL }}js/libs/dd_belatedpng.js"></script>
+	<script> DD_belatedPNG.fix('img, .png_bg');</script>
+	<![endif]-->
+  </body>
+</html>
